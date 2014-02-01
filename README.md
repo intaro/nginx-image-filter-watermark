@@ -22,12 +22,14 @@ Tested on nginx-1.5.9
 ```
 
 image_filter_watermark_width_from -  Minimal width image (after resize and crop) of when to use watermark.
+
 image_filter_watermark_height_from -  Minimal height image (after resize and crop) of when to use watermark.
 
 if  width or height image (after resize and crop) more then image_filter_watermark_height_from or image_filter_watermark_width_from then image get watermark
 
 image_filter_watermark -  path to watermark file
-image_filter_watermark_position -  position watermark, available: top-left|top-right|bottom-right|bottom-left
+
+image_filter_watermark_position - position watermark, available: top-left|top-right|bottom-right|bottom-left
 
 ### Install
 

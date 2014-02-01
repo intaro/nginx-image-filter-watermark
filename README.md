@@ -13,8 +13,8 @@ Tested on nginx-1.5.9
 
     image_filter                watermark;
 
-    image_filter_watermark_width_from 400;   # Minimal width of when to use watermark
-    image_filter_watermark_height_from 400;  # Minimal height of when to use watermark
+    image_filter_watermark_width_from 400;   # Minimal width of when to use watermark.  Only in resize
+    image_filter_watermark_height_from 400;  # Minimal height of when to use watermark. Only in resize
     
     image_filter_watermark "PATH_TO_FILE";
     image_filter_watermark_position bottom-right; # top-left|top-right|bottom-right|bottom-left
@@ -41,9 +41,6 @@ Base Usage:
 ```
     location /img/) {
         image_filter                watermark;
-
-        image_filter_watermark_width_from 400;   # Minimal width of when to use watermark
-        image_filter_watermark_height_from 400;  # Minimal height of when to use watermark
         
         image_filter_watermark "PATH_TO_FILE";
         image_filter_watermark_position bottom-right; # top-left|top-right|bottom-right|bottom-left

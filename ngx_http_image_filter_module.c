@@ -1012,8 +1012,18 @@ transparent:
     }
 
     if (conf->watermark.data) {
-        if ( ctx->max_width >= conf->watermark_width_from || 
-                ctx->max_height >= conf->watermark_height_from){
+        int min_w, min_h;
+
+        min_w=ctx->max_width;
+        min_h=ctx->max_height;
+
+        if (!ctx->max_width && !ctx->max_height){
+          min_w=sx;
+          min_h=sy;
+        }
+
+        if ( min_w >= conf->watermark_width_from || 
+              min_h >= conf->watermark_height_from){
 
             FILE *watermark_file = fopen((const char *)conf->watermark.data, "r");
 

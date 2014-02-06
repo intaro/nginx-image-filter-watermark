@@ -1,45 +1,39 @@
 Nginx-image-filter-watermark
 ============================
 
-Patched image_filter module for Nginx with watermark ability
+Patched `image_filter_module` for Nginx with watermark ability. Patch based on [http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
 
-Patch based on [http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
-
-Tested on nginx-1.5.9
-
-
+Tested on nginx 1.5.9.
 
 ### Available options:
 
 ```
-    image_filter                watermark;
+image_filter watermark;
 
-    image_filter_watermark_width_from 300;
-    image_filter_watermark_height_from 400;
+image_filter_watermark_width_from 300;
+image_filter_watermark_height_from 400;
     
-    image_filter_watermark "PATH_TO_FILE";
-    image_filter_watermark_position bottom-right; # top-left|top-right|bottom-right|bottom-left
+image_filter_watermark "PATH_TO_FILE";
+image_filter_watermark_position bottom-right; # top-left|top-right|bottom-right|bottom-left
 ```
 
-image_filter_watermark_width_from -  Minimal width image (after resize and crop) of when to use watermark.
+`image_filter_watermark_width_from` - Minimal width image (after resize and crop) of when to use watermark.
+`image_filter_watermark_height_from` - Minimal height image (after resize and crop) of when to use watermark.
 
-image_filter_watermark_height_from -  Minimal height image (after resize and crop) of when to use watermark.
+If width or height image (after resize and crop) more then `image_filter_watermark_height_from` or `image_filter_watermark_width_from` then image gets watermark.
 
-if  width or height image (after resize and crop) more then image_filter_watermark_height_from or image_filter_watermark_width_from then image get watermark
-
-image_filter_watermark -  path to watermark file
-
-image_filter_watermark_position - position watermark, available: top-left|top-right|bottom-right|bottom-left
+`image_filter_watermark` - path to watermark file.
+`image_filter_watermark_position` - position of watermark, available values are `top-left|top-right|bottom-right|bottom-left`.
 
 ### Install
 
 Get source code and replace  module file in
-nginx/src/http/modules/http_image_filter_module.c
+`nginx/src/http/modules/http_image_filter_module.c`
 
-Build nginx with module
+Build nginx with module.
 
 ```
-/configure  --with-http_image_filter_module
+/configure --with-http_image_filter_module
 make
 make install
 ```
@@ -50,8 +44,8 @@ make install
 Base Usage:
 
 ```
-    location /img/) {
-        image_filter                watermark;
+    location /img/ {
+        image_filter watermark;
 
         image_filter_watermark "PATH_TO_FILE";
         image_filter_watermark_position bottom-right; # top-left|top-right|bottom-right|bottom-left

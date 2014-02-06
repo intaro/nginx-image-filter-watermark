@@ -1350,8 +1350,8 @@ ngx_http_image_filter_merge_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_conf_merge_str_value(conf->watermark, prev->watermark, "");
     ngx_conf_merge_str_value(conf->watermark_position, prev->watermark_position, "bottom-right");
     
-    ngx_conf_merge_uint_value(conf->watermark_height_from, prev->watermark_height_from, 0);
-    ngx_conf_merge_uint_value(conf->watermark_width_from, prev->watermark_height_from, 0);
+    ngx_conf_merge_value(conf->watermark_height_from, prev->watermark_height_from, 0);
+    ngx_conf_merge_value(conf->watermark_width_from, prev->watermark_height_from, 0);
 
     return NGX_CONF_OK;
 }

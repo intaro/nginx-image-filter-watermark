@@ -1050,12 +1050,18 @@ transparent:
                     gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, watermark->sx, watermark->sy);
                     gdImageCopy(watermark_mix, watermark, 0, 0, 0, 0, watermark->sx, watermark->sy);
                     gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 75);
-                    gdFree(watermark);
-                    gdFree(watermark_mix);
-                } else { ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "watermark file '%s' is not PNG", conf->watermark.data);}
+                    gdImageDestroy(watermark_mix);
+
+                } else { 
+                    ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "watermark file '%s' is not PNG", conf->watermark.data);
+                }
+
+                gdImageDestroy(watermark);
             } else {
                 ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "watermark file '%s' not found", conf->watermark.data);
             }
+
+            fclose(watermark_file);
         }
     }
 

@@ -583,7 +583,8 @@ ngx_http_image_process(ngx_http_request_t *r)
         && ctx->width <= ctx->max_width
         && ctx->height <= ctx->max_height
         && ctx->angle == 0
-        && !ctx->force)
+        && !ctx->force
+        && !conf->watermark.data)
     {
         return ngx_http_image_asis(r, ctx);
     }
@@ -810,7 +811,8 @@ ngx_http_image_resize(ngx_http_request_t *r, ngx_http_image_filter_ctx_t *ctx)
     if (!ctx->force
         && ctx->angle == 0
         && (ngx_uint_t) sx <= ctx->max_width
-        && (ngx_uint_t) sy <= ctx->max_height)
+        && (ngx_uint_t) sy <= ctx->max_height
+        && !conf->watermark.data)
     {
         gdImageDestroy(src);
         return ngx_http_image_asis(r, ctx);
@@ -1353,7 +1355,7 @@ ngx_http_image_filter_merge_conf(ngx_conf_t *cf, void *parent, void *child)
     ngx_conf_merge_size_value(conf->buffer_size, prev->buffer_size,
                               1 * 1024 * 1024);
 
-    ngx_conf_merge_str_value(conf->watermark, prev->watermark, "");
+    ngx_conf_merge_str_value(conf->watermark, prev->watermark, NULL);
     ngx_conf_merge_str_value(conf->watermark_position, prev->watermark_position, "bottom-right");
     
     ngx_conf_merge_value(conf->watermark_height_from, prev->watermark_height_from, 0);

@@ -1020,8 +1020,8 @@ transparent:
         min_h=ctx->max_height;
 
         if (!ctx->max_width && !ctx->max_height){
-          min_w=sx;
-          min_h=sy;
+            min_w=sx;
+            min_h=sy;
         }
 
         if ( min_w >= conf->watermark_width_from || 
@@ -1048,7 +1048,23 @@ transparent:
                     } else if (ngx_strcmp(conf->watermark_position.data, "bottom-left") == 0) {
                         wdx = 10;
                         wdy = dy - watermark->sy - 10;
+                    }else if (ngx_strcmp(conf->watermark_position.data, "top-center") == 0) {
+                        wdy = 10;
+                        wdx = (int)dx/2 - (int)watermark->sx/2;
+                    }else if (ngx_strcmp(conf->watermark_position.data, "bottom-center") == 0) {
+                        wdx = (int)dx/2 - (int)watermark->sx/2;
+                        wdy = dy - watermark->sy - 10;
+                    }else if (ngx_strcmp(conf->watermark_position.data, "left-center") == 0) {
+                        wdx = 10;
+                        wdy = (int)dy/2 - (int)watermark->sy/2;
+                    }else if (ngx_strcmp(conf->watermark_position.data, "right-center") == 0) {
+                        wdx = dx - watermark->sx - 10;
+                        wdy = (int)dy/2 - (int)watermark->sy/2;
+                    }else if (ngx_strcmp(conf->watermark_position.data, "center-center") == 0) {
+                        wdx = (int)dx/2 - (int)watermark->sx/2;
+                        wdy = (int)dy/2 - (int)watermark->sy/2;
                     }
+
                     gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, watermark->sx, watermark->sy);
                     gdImageCopy(watermark_mix, watermark, 0, 0, 0, 0, watermark->sx, watermark->sy);
                     gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 75);

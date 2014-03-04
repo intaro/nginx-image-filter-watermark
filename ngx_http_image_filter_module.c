@@ -1080,6 +1080,12 @@ transparent:
             }
 
             fclose(watermark_file);
+        }else{
+            if (conf->filter == NGX_HTTP_IMAGE_WATERMARK)
+            {
+                gdImageDestroy(src);
+                return ngx_http_image_asis(r, ctx);
+            }
         }
     }
 

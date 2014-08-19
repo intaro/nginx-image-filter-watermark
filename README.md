@@ -14,7 +14,7 @@ image_filter_watermark_width_from 300;
 image_filter_watermark_height_from 400;
     
 image_filter_watermark "PATH_TO_FILE";
-image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center
+image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
 ```
 
 `image_filter_watermark_width_from` - Minimal width image (after resize and crop) of when to use watermark.
@@ -23,7 +23,7 @@ image_filter_watermark_position center-center; # top-left|top-right|bottom-right
 If width or height image (after resize and crop) more then `image_filter_watermark_height_from` or `image_filter_watermark_width_from` then image gets watermark.
 
 `image_filter_watermark` - path to watermark file.
-`image_filter_watermark_position` - position of watermark, available values are `top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center`.
+`image_filter_watermark_position` - position of watermark, available values are `top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`.
 
 ### Install
 

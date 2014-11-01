@@ -57,7 +57,8 @@ typedef struct {
     ngx_http_complex_value_t    *acv;
     ngx_http_complex_value_t    *jqcv;
     ngx_http_complex_value_t    *shcv;
-	ngx_http_complex_value_t    *wmcv;
+    ngx_http_complex_value_t    *wmcv;
+    ngx_http_complex_value_t    *wmpcv;
 
     size_t                       buffer_size;
 } ngx_http_image_filter_conf_t;
@@ -171,9 +172,9 @@ static ngx_command_t  ngx_http_image_filter_commands[] = {
       NULL },
     { ngx_string("image_filter_watermark_position"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
-      ngx_conf_set_str_slot,
+      ngx_http_set_complex_value_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
-      offsetof(ngx_http_image_filter_conf_t, watermark_position),
+      offsetof(ngx_http_image_filter_conf_t, wmpcv),
       NULL },
     { ngx_string("image_filter_watermark_height_from"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
@@ -579,9 +580,16 @@ ngx_http_image_process(ngx_http_request_t *r)
 		watermark_value = ngx_http_image_filter_get_str_value(r, conf->wmcv, conf->watermark);
 		conf->watermark.data = ngx_pcalloc(r->pool, watermark_value.len + 1);
 		ngx_cpystrn(conf->watermark.data, watermark_value.data, watermark_value.len+1);
-	
+
 		conf->watermark.len = watermark_value.len;
+
+		ngx_str_t  watermark_position_value;
+		watermark_position_value = ngx_http_image_filter_get_str_value(r, conf->wmpcv, conf->watermark_position);
+		conf->watermark_position.data = ngx_pcalloc(r->pool, watermark_position_value.len + 1);
+		ngx_cpystrn(conf->watermark_position.data, watermark_position_value.data, watermark_position_value.len+1);
 	
+		conf->watermark_position.len = watermark_position_value.len;
+
 		if (conf->filter == NGX_HTTP_IMAGE_WATERMARK) {
 			if (!conf->watermark.data) {
 				return NULL;

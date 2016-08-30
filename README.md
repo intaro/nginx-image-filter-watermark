@@ -78,4 +78,4 @@ Usage with resize and crop:
    }
 ```
 ### FreeBSD port www/nginx-devel:1.11.3 patch
-Copy file extra-patch-src-http-modules-ngx_http_image_filter_module.c inside /usr/ports/www/nginx-devel/files directory
+Copy file patch-src-http-modules-ngx_http_image_filter_module.c inside /usr/ports/www/nginx-devel/files directory

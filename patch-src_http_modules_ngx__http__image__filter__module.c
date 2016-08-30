@@ -1,4 +1,4 @@
---- src/http/modules/ngx_http_image_filter_module.c.orig
+--- src/http/modules/ngx_http_image_filter_module.c.orig	2016-07-26 13:58:59 UTC
 +++ src/http/modules/ngx_http_image_filter_module.c
 @@ -18,7 +18,7 @@
  #define NGX_HTTP_IMAGE_RESIZE    3
@@ -46,7 +46,7 @@
  
      size_t                       buffer_size;
  } ngx_http_image_filter_conf_t;
-@@ -144,7 +151,7 @@ static ngx_command_t  ngx_http_image_filter_commands[] = {
+@@ -144,7 +151,7 @@ static ngx_command_t  ngx_http_image_fil
        offsetof(ngx_http_image_filter_conf_t, transparency),
        NULL },
  
@@ -55,7 +55,7 @@
        NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
        ngx_conf_set_flag_slot,
        NGX_HTTP_LOC_CONF_OFFSET,
-@@ -157,6 +164,30 @@ static ngx_command_t  ngx_http_image_filter_commands[] = {
+@@ -157,6 +164,30 @@ static ngx_command_t  ngx_http_image_fil
        NGX_HTTP_LOC_CONF_OFFSET,
        offsetof(ngx_http_image_filter_conf_t, buffer_size),
        NULL },
@@ -86,7 +86,7 @@
  
        ngx_null_command
  };
-@@ -500,6 +531,23 @@ ngx_http_image_read(ngx_http_request_t *r, ngx_chain_t *in)
+@@ -500,6 +531,23 @@ ngx_http_image_read(ngx_http_request_t *
      return NGX_AGAIN;
  }
  
@@ -110,7 +110,7 @@
  
  static ngx_buf_t *
  ngx_http_image_process(ngx_http_request_t *r)
-@@ -508,45 +556,65 @@ ngx_http_image_process(ngx_http_request_t *r)
+@@ -508,45 +556,65 @@ ngx_http_image_process(ngx_http_request_
      ngx_http_image_filter_ctx_t   *ctx;
      ngx_http_image_filter_conf_t  *conf;
  
@@ -138,21 +138,19 @@
 +	    if (ctx->angle != 90 && ctx->angle != 180 && ctx->angle != 270) {
              return NULL;
          }
--
--        return ngx_http_image_resize(r, ctx);
--    }
--
--    ctx->max_width = ngx_http_image_filter_get_value(r, conf->wcv, conf->width);
--    if (ctx->max_width == 0) {
 +	    return ngx_http_image_resize(r, ctx);
 +	}
-+
+ 
+-        return ngx_http_image_resize(r, ctx);
+-    }
 +	if (conf->wmcv || conf->watermark.data) {
 +		ngx_str_t  watermark_value;
 +		watermark_value = ngx_http_image_filter_get_str_value(r, conf->wmcv, conf->watermark);
 +		conf->watermark.data = ngx_pcalloc(r->pool, watermark_value.len + 1);
 +		ngx_cpystrn(conf->watermark.data, watermark_value.data, watermark_value.len+1);
-+
+ 
+-    ctx->max_width = ngx_http_image_filter_get_value(r, conf->wcv, conf->width);
+-    if (ctx->max_width == 0) {
 +		conf->watermark.len = watermark_value.len;
 +
 +		ngx_str_t  watermark_position_value;
@@ -195,7 +193,7 @@
      {
          return ngx_http_image_asis(r, ctx);
      }
-@@ -737,7 +805,7 @@ ngx_http_image_size(ngx_http_request_t *r, ngx_http_image_filter_ctx_t *ctx)
+@@ -737,7 +805,7 @@ ngx_http_image_size(ngx_http_request_t *
      }
  
      ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
@@ -204,7 +202,7 @@
  
      ctx->width = width;
      ctx->height = height;
-@@ -773,7 +841,8 @@ ngx_http_image_resize(ngx_http_request_t *r, ngx_http_image_filter_ctx_t *ctx)
+@@ -773,7 +841,8 @@ ngx_http_image_resize(ngx_http_request_t
      if (!ctx->force
          && ctx->angle == 0
          && (ngx_uint_t) sx <= ctx->max_width
@@ -324,7 +322,7 @@
  
      return b;
  }
-@@ -1156,7 +1312,6 @@ ngx_http_image_filter_get_value(ngx_http_request_t *r,
+@@ -1156,7 +1312,6 @@ ngx_http_image_filter_get_value(ngx_http
      return ngx_http_image_filter_value(&val);
  }
  
@@ -332,7 +330,7 @@
  static ngx_uint_t
  ngx_http_image_filter_value(ngx_str_t *value)
  {
-@@ -1206,6 +1361,9 @@ ngx_http_image_filter_create_conf(ngx_conf_t *cf)
+@@ -1206,6 +1361,9 @@ ngx_http_image_filter_create_conf(ngx_co
      conf->interlace = NGX_CONF_UNSET;
      conf->buffer_size = NGX_CONF_UNSET_SIZE;
  
@@ -342,7 +340,7 @@
      return conf;
  }
  
-@@ -1257,6 +1415,12 @@ ngx_http_image_filter_merge_conf(ngx_conf_t *cf, void *parent, void *child)
+@@ -1257,6 +1415,12 @@ ngx_http_image_filter_merge_conf(ngx_con
      ngx_conf_merge_size_value(conf->buffer_size, prev->buffer_size,
                                1 * 1024 * 1024);
  
@@ -355,7 +353,7 @@
      return NGX_CONF_OK;
  }
  
-@@ -1285,7 +1449,9 @@ ngx_http_image_filter(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+@@ -1285,7 +1449,9 @@ ngx_http_image_filter(ngx_conf_t *cf, ng
  
          } else if (ngx_strcmp(value[i].data, "size") == 0) {
              imcf->filter = NGX_HTTP_IMAGE_SIZE;
@@ -366,7 +364,7 @@
          } else {
              goto failed;
          }
-@@ -1342,7 +1508,8 @@ ngx_http_image_filter(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+@@ -1342,7 +1508,8 @@ ngx_http_image_filter(ngx_conf_t *cf, ng
  
      } else if (ngx_strcmp(value[i].data, "crop") == 0) {
          imcf->filter = NGX_HTTP_IMAGE_CROP;

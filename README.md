@@ -3,7 +3,7 @@ Nginx-image-filter-watermark
 
 Patched `image_filter_module` for Nginx with watermark ability. Patch based on [http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
 
-Tested on nginx 1.5.9.
+Should work properly on nginx >= 1.11.6.
 
 ### Available options:
 

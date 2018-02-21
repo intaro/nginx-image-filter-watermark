@@ -84,7 +84,7 @@ Resize and crop can omit any dimension value
 
 ```
 location /resize/ {
-    alias /path/to/backgraund/image;
+    alias /path/to/background/image;
 
     image_filter resize $arg_w $arg_h;
 
@@ -93,7 +93,7 @@ location /resize/ {
 }
 
 location /crop/ {
-    alias /path/to/backgraund/image;
+    alias /path/to/background/image;
 
     image_filter crop $arg_w $arg_h;
 

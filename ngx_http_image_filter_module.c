@@ -628,21 +628,11 @@ ngx_http_image_process(ngx_http_request_t *r)
                                     conf->width
                             );
 
-    if (ctx->max_width == 0 &&
-        conf->filter != NGX_HTTP_IMAGE_RESIZE) {
-        return NULL;
-    }
-
     ctx->max_height = ngx_http_image_filter_get_value(
                                     r,
                                     conf->hcv,
                                     conf->height
                             );
-
-    if (ctx->max_height == 0 &&
-        conf->filter != NGX_HTTP_IMAGE_RESIZE) {
-        return NULL;
-    }
 
     if (ctx->max_width == 0 && ctx->max_height == 0) {
         return NULL;

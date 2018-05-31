@@ -1134,13 +1134,12 @@ transparent:
                 FILE *watermark_file = fopen((const char *)conf->watermark.data, "r");
 
                 if (watermark_file) {
-                    gdImagePtr watermark, watermark_mix;
+                    gdImagePtr watermark, watermark_mix, white, white_mix;
                     ngx_int_t wdx = 0, wdy = 0;
 
                     watermark = gdImageCreateFromPng(watermark_file);
 
                     if(watermark != NULL) {
-                        watermark_mix = gdImageCreateTrueColor(watermark->sx, watermark->sy);
                         if (ngx_strcmp(conf->watermark_position.data, "bottom-right") == 0) {
                             wdx = (int)dst->sx - watermark->sx - 10;
                             wdy = (int)dst->sy - watermark->sy - 10;
@@ -1177,7 +1176,19 @@ transparent:
                                 wdy = ((int)dst->sy/2 - (int)watermark->sy/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
                             }
                         }
-
+                        watermark_mix = gdImageCreateTrueColor(watermark->sx, watermark->sy);
+                        // WorkAround on transparent source, fill background to white
+                        if (ctx->type == NGX_HTTP_IMAGE_GIF || ctx->type == NGX_HTTP_IMAGE_PNG) {
+                       		white = gdImageCreateTrueColor(dst->sx, dst->sy);
+                        	white_mix = gdImageCreateTrueColor(dst->sx, dst->sy);
+				gdImageFill(white,0,0,gdImageColorAllocate(white,255,255,255));
+                        	gdImageCopy(white_mix, white, 0, 0, 0, 0, white_mix->sx, white_mix->sy);
+                        	gdImageCopy(white_mix, dst, 0, 0, 0, 0, white_mix->sx, white_mix->sy);
+				gdImageCopyMerge(white, white_mix, 0, 0, 0, 0, white->sx, white->sy, 100);
+                        	gdImageDestroy(dst);
+                        	gdImageDestroy(white_mix);
+                        	dst=white;
+			}
                         gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, watermark->sx, watermark->sy);
                         gdImageCopy(watermark_mix, watermark, 0, 0, 0, 0, watermark->sx, watermark->sy);
                         gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 75);

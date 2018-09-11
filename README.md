@@ -1,6 +1,5 @@
 Nginx-image-filter-watermark
 ============================
-Fork of [this repo](https://github.com/intaro/nginx-image-filter-watermark) with ability to resize watermark relative to image
 
 Patched `image_filter_module` for Nginx with watermark ability. Patch based on [http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
 
@@ -15,7 +14,10 @@ image_filter_watermark_width_from 300;
 image_filter_watermark_height_from 400;
     
 image_filter_watermark "PATH_TO_FILE";
-image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
+image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`;
+
+image_filter_watermark_relative_height 5; #height of watermark in percents
+image_filter_watermark_relative_width 25; #width of watermark in percents
 ```
 
 `image_filter_watermark_width_from` - Minimal width image (after resize and crop) of when to use watermark.
@@ -25,6 +27,11 @@ If width or height image (after resize and crop) more then `image_filter_waterma
 
 `image_filter_watermark` - path to watermark file.
 `image_filter_watermark_position` - position of watermark, available values are `top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`.
+
+`image_filter_watermark_relative_width` – Width of watermark relative to image.
+`image_filter_watermark_relative_height` – Height of watermark relative to image.
+
+If image is in horizontal orientation, the width will be in priority, if vertical - vice versa.
 
 ### Install
 

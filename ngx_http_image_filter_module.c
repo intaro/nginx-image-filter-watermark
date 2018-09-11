@@ -53,6 +53,8 @@ typedef struct {
     ngx_str_t           watermark_position; // top-left|top-right|bottom-right|bottom-left
     ngx_int_t           watermark_width_from; // width from use watermark
     ngx_int_t           watermark_height_from; // height from use watermark
+    ngx_int_t           watermark_relative_height; //height of watermark in percents
+    ngx_int_t           watermark_relative_width; //width of watermark in percents
 
     ngx_http_complex_value_t    *wcv;
     ngx_http_complex_value_t    *hcv;
@@ -199,6 +201,18 @@ static ngx_command_t  ngx_http_image_filter_commands[] = {
       ngx_conf_set_num_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
       offsetof(ngx_http_image_filter_conf_t, watermark_width_from),
+      NULL },
+    { ngx_string("image_filter_watermark_relative_height"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_conf_set_num_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, watermark_relative_height),
+      NULL },
+    { ngx_string("image_filter_watermark_relative_width"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_conf_set_num_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, watermark_relative_width),
       NULL },
 
       ngx_null_command
@@ -1136,51 +1150,81 @@ transparent:
                 if (watermark_file) {
                     gdImagePtr watermark, watermark_mix;
                     ngx_int_t wdx = 0, wdy = 0;
+                    int wdw = 0, wdh = 0;
 
                     watermark = gdImageCreateFromPng(watermark_file);
-
+                    
                     if(watermark != NULL) {
-                        watermark_mix = gdImageCreateTrueColor(watermark->sx, watermark->sy);
-                        if (ngx_strcmp(conf->watermark_position.data, "bottom-right") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
-                            wdy = (int)dst->sy - watermark->sy - 10;
-                        } else if (ngx_strcmp(conf->watermark_position.data, "top-left") == 0) {
-                            wdx = wdy = 10;
-                        } else if (ngx_strcmp(conf->watermark_position.data, "top-right") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
-                            wdy = 10;
-                        } else if (ngx_strcmp(conf->watermark_position.data, "bottom-left") == 0) {
-                            wdx = 10;
-                            wdy = (int)dst->sy - watermark->sy - 10;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "top-center") == 0) {
-                            wdy = 10;
-                            wdx = (int)dst->sx/2 - (int)watermark->sx/2;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "bottom-center") == 0) {
-                            wdx = (int)dst->sx/2 - (int)watermark->sx/2;
-                            wdy = (int)dst->sy - watermark->sy - 10;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "left-center") == 0) {
-                            wdx = 10;
-                            wdy = (int)dst->sy/2 - (int)watermark->sy/2;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "right-center") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
-                            wdy = (int)dst->sy/2 - (int)watermark->sy/2;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "center-center") == 0) {
-                            wdx = (int)dst->sx/2 - (int)watermark->sx/2;
-                            wdy = (int)dst->sy/2 - (int)watermark->sy/2;
-                        }else if (ngx_strcmp(conf->watermark_position.data, "center-random") == 0) {
-                            ngx_int_t randomBit = rand() & 1;
-                            if (randomBit) {
-                                wdx = ((int)dst->sx/2 - (int)watermark->sx/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
-                                wdy = ((int)dst->sy/2 - (int)watermark->sy/2) + (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
-                            } else {
-                                wdx = ((int)dst->sx/2 - (int)watermark->sx/2) + (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
-                                wdy = ((int)dst->sy/2 - (int)watermark->sy/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
+                        wdw = (int)watermark->sx;
+                        wdh = (int)watermark->sy;
+
+                        if (wdh > wdw) {
+                            if (conf->watermark_relative_height) {
+                                wdh = (int)dst->sy/100*conf->watermark_relative_height;
+                                wdw = (int)((float)wdh/(float)watermark->sy*(float)watermark->sx);
+
+                                if (conf->watermark_relative_width 
+                                        && wdw > (int)dst->sx/100*conf->watermark_relative_width) {
+                                    wdw = (int)dst->sx/100*conf->watermark_relative_width;
+                                    wdh = (int)((float)wdw/(float)watermark->sx*(float)watermark->sy);
+                                }
+                            }
+                        }
+                        else {
+                            if (conf->watermark_relative_width) {
+                                wdw = (int)dst->sx/100*conf->watermark_relative_width;
+                                wdh = (int)((float)wdw/(float)watermark->sx*(float)watermark->sy);
+
+                                if (conf->watermark_relative_height 
+                                        && wdh > (int)dst->sy/100*conf->watermark_relative_height) {
+                                    wdh = (int)dst->sy/100*conf->watermark_relative_height;
+                                    wdw = (int)((float)wdh/(float)watermark->sy*(float)watermark->sx);
+                                }
                             }
                         }
 
-                        gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, watermark->sx, watermark->sy);
-                        gdImageCopy(watermark_mix, watermark, 0, 0, 0, 0, watermark->sx, watermark->sy);
-                        gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 75);
+
+                        watermark_mix = gdImageCreateTrueColor(wdw, wdh);
+                        if (ngx_strcmp(conf->watermark_position.data, "bottom-right") == 0) {
+                            wdx = (int)dst->sx - wdw - 10;
+                            wdy = (int)dst->sy - wdh - 10;
+                        } else if (ngx_strcmp(conf->watermark_position.data, "top-left") == 0) {
+                            wdx = wdy = 10;
+                        } else if (ngx_strcmp(conf->watermark_position.data, "top-right") == 0) {
+                            wdx = (int)dst->sx - wdw - 10;
+                            wdy = 10;
+                        } else if (ngx_strcmp(conf->watermark_position.data, "bottom-left") == 0) {
+                            wdx = 10;
+                            wdy = (int)dst->sy - wdh - 10;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "top-center") == 0) {
+                            wdy = 10;
+                            wdx = (int)dst->sx/2 - (int)wdw/2;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "bottom-center") == 0) {
+                            wdx = (int)dst->sx/2 - (int)wdw/2;
+                            wdy = (int)dst->sy - wdh - 10;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "left-center") == 0) {
+                            wdx = 10;
+                            wdy = (int)dst->sy/2 - (int)wdh/2;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "right-center") == 0) {
+                            wdx = (int)dst->sx - wdw - 10;
+                            wdy = (int)dst->sy/2 - (int)wdh/2;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "center-center") == 0) {
+                            wdx = (int)dst->sx/2 - (int)wdw/2;
+                            wdy = (int)dst->sy/2 - (int)wdh/2;
+                        }else if (ngx_strcmp(conf->watermark_position.data, "center-random") == 0) {
+                            ngx_int_t randomBit = rand() & 1;
+                            if (randomBit) {
+                                wdx = ((int)dst->sx/2 - (int)wdw/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
+                                wdy = ((int)dst->sy/2 - (int)wdh/2) + (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
+                            } else {
+                                wdx = ((int)dst->sx/2 - (int)wdw/2) + (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
+                                wdy = ((int)dst->sy/2 - (int)wdh/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
+                            }
+                        }
+
+                        gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, wdw, wdh);
+                        gdImageCopyResampled(watermark_mix, watermark, 0, 0, 0, 0, wdw, wdh, watermark->sx, watermark->sy);
+                        gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, wdw, wdh, 75);
                         gdImageDestroy(watermark_mix);
 
                     } else {
@@ -1466,6 +1510,8 @@ ngx_http_image_filter_create_conf(ngx_conf_t *cf)
 
     conf->watermark_width_from = NGX_CONF_UNSET_UINT;
     conf->watermark_height_from = NGX_CONF_UNSET_UINT;
+    conf->watermark_relative_height = NGX_CONF_UNSET_UINT;
+    conf->watermark_relative_width = NGX_CONF_UNSET_UINT;
 
     return conf;
 }
@@ -1533,6 +1579,9 @@ ngx_http_image_filter_merge_conf(ngx_conf_t *cf, void *parent, void *child)
     
     ngx_conf_merge_value(conf->watermark_height_from, prev->watermark_height_from, 0);
     ngx_conf_merge_value(conf->watermark_width_from, prev->watermark_height_from, 0);
+    ngx_conf_merge_value(conf->watermark_relative_height, prev->watermark_relative_height, 0);
+    ngx_conf_merge_value(conf->watermark_relative_width, prev->watermark_relative_width, 0);
+    ngx_conf_merge_value(conf->watermark_relative_width, prev->watermark_relative_width, 0);
 
     return NGX_CONF_OK;
 }

@@ -1,5 +1,6 @@
 Nginx-image-filter-watermark
 ============================
+Fork of [this repo](https://github.com/intaro/nginx-image-filter-watermark) with ability to resize watermark relative to image
 
 Patched `image_filter_module` for Nginx with watermark ability. Patch based on [http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
 

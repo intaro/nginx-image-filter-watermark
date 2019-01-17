@@ -1120,12 +1120,15 @@ transparent:
     if (conf->watermark.data) {
             int min_w, min_h;
 
-            min_w=ctx->max_width;
-            min_h=ctx->max_height;
+            min_w=dx;
+            min_h=dy;
 
-            if (!ctx->max_width && !ctx->max_height){
-                min_w=sx;
-                min_h=sy;
+            if (!min_w || min_w < 0) {
+                min_w=ctx->max_width;
+            }
+
+            if (!min_h || min_h < 0) {
+                min_h=ctx->max_height;
             }
 
             if ( min_w >= conf->watermark_width_from &&

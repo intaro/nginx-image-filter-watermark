@@ -61,7 +61,7 @@ Usage with resize and crop:
        set                         $crop_width  $3;
        set                         $crop_height $4;
 
-       alias                       /Users/goshan/Sites/Zot/Zot/web/$5;
+       alias                       /PATH_TO_STATIC/web/$5;
        try_files                   "" @404;
 
        image_filter                resize $resize_width $resize_height;
@@ -77,3 +77,11 @@ Usage with resize and crop:
        image_filter_watermark_position center-center;
    }
 ```
+
+### Example test memory leaks
+
+```
+ab -n 3000 -c 10 -k  http://image-resize.local/r/500x-/some-file.jpg
+```
+
+While there is a load test,  track at how the RAM behaves

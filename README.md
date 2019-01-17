@@ -12,7 +12,7 @@ image_filter watermark;
 
 image_filter_watermark_width_from 300;
 image_filter_watermark_height_from 400;
-    
+
 image_filter_watermark "PATH_TO_FILE";
 image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
 ```
@@ -76,4 +76,44 @@ Usage with resize and crop:
        image_filter_watermark "PATH_TO_FILE";
        image_filter_watermark_position center-center;
    }
+```
+
+Resize and crop can omit any dimension value
+
+* For example, nginx locations configuration:
+
+```
+location /resize/ {
+    alias /path/to/background/image;
+
+    image_filter resize $arg_w $arg_h;
+
+    image_filter_watermark /path/to/watermark/image;
+    image_filter_watermark_position center-center;
+}
+
+location /crop/ {
+    alias /path/to/background/image;
+
+    image_filter crop $arg_w $arg_h;
+
+    image_filter_watermark /path/to/watermark/image;
+    image_filter_watermark_position center-center;
+}
+```
+
+* Requests with args:
+
+1. for proportionally reduces an image to the specified width
+
+```
+    http://localhost/resize/test.png?w=200
+    http://localhost/resize/test.png?w=200&h=-
+```
+
+2. for proportionally reduces an image to the width size and crops by height
+
+```
+    http://localhost/crop/test.png?h=250
+    http://localhost/crop/tets.png?w=-&h=250
 ```

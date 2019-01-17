@@ -621,27 +621,25 @@ ngx_http_image_process(ngx_http_request_t *r)
         return ngx_http_image_resize(r, ctx);
     }
 	}
-	ctx->max_width = ngx_http_image_filter_get_value(r, conf->wcv, conf->width);
 
-    if (ctx->max_width == 0) {
+    ctx->max_width = ngx_http_image_filter_get_value(
+                                    r,
+                                    conf->wcv,
+                                    conf->width
+                            );
+
+    ctx->max_height = ngx_http_image_filter_get_value(
+                                    r,
+                                    conf->hcv,
+                                    conf->height
+                            );
+
+    if (ctx->max_width == 0 && ctx->max_height == 0) {
         return NULL;
     }
 
-    ctx->max_height = ngx_http_image_filter_get_value(r, conf->hcv,
-                                                      conf->height);
-    if (ctx->max_height == 0) {
-        return NULL;
-    }
-
-    if (rc == NGX_OK
-        && ctx->width <= ctx->max_width
-        && ctx->height <= ctx->max_height
-        && ctx->angle == 0
-        && !ctx->force
-        && !conf->watermark.data)
-    {
-        return ngx_http_image_asis(r, ctx);
-    }
+    if(ctx->max_width == 0)  ctx->max_width =ctx->width;
+    if(ctx->max_height == 0) ctx->max_height=ctx->height;
 
     return ngx_http_image_resize(r, ctx);
 }

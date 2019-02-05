@@ -25,6 +25,16 @@ If width or height image (after resize and crop) more then `image_filter_waterma
 `image_filter_watermark` - path to watermark file.
 `image_filter_watermark_position` - position of watermark, available values are `top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`.
 
+
+        image_filter_watermark_text "Text on picture";
+        image_filter_watermark_font "/tmp/font.TTF";  #Optional Font file
+        image_filter_watermark_size 30; #Optional Font Size
+        image_filter_watermark_colorR "88"; #Optional RBG COLOR
+        image_filter_watermark_colorB "88"; #Optional RBG COLOR
+        image_filter_watermark_colorG "88"; #Optional RBG COLOR
+       Text will always be at top center of image
+
+
 ### Install
 
 Get source code and replace  module file in

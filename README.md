@@ -23,7 +23,7 @@ image_filter_watermark_size 8.5; #Font Size
 image_filter_watermark_colorR "0"; #Font Color R
 image_filter_watermark_colorB "0"; #Font Color B
 image_filter_watermark_colorG "0"; #Font Color G
-image_filter_watermark_fontposition top-left; #Font location
+image_filter_watermark_fontposition top-left; #Font location top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
 
 
 ```

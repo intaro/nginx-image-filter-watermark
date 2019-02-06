@@ -53,6 +53,16 @@ typedef struct {
     ngx_str_t           watermark_position; // top-left|top-right|bottom-right|bottom-left
     ngx_int_t           watermark_width_from; // width from use watermark
     ngx_int_t           watermark_height_from; // height from use watermark
+	
+	ngx_str_t           watermark_text;  // 
+    ngx_str_t           watermark_size; // 
+    ngx_str_t           watermark_font; // 
+    ngx_str_t           watermark_color_R; // 
+    ngx_str_t           watermark_color_B; // 
+    ngx_str_t           watermark_color_G; // 
+	ngx_str_t           watermark_fontposition; // top-left|top-right|bottom-right|bottom-left
+	
+	
 
     ngx_http_complex_value_t    *wcv;
     ngx_http_complex_value_t    *hcv;
@@ -62,6 +72,15 @@ typedef struct {
     ngx_http_complex_value_t    *shcv;
     ngx_http_complex_value_t    *wmcv;
     ngx_http_complex_value_t    *wmpcv;
+	
+    ngx_http_complex_value_t    *ftxt;
+    ngx_http_complex_value_t    *fsze;
+    ngx_http_complex_value_t    *ffont;
+    ngx_http_complex_value_t    *fcolorR;
+    ngx_http_complex_value_t    *fcolorB;
+    ngx_http_complex_value_t    *fcolorG;
+    ngx_http_complex_value_t    *fpst;
+    ngx_http_complex_value_t    *ftop;
 
     size_t                       buffer_size;
 } ngx_http_image_filter_conf_t;
@@ -187,6 +206,48 @@ static ngx_command_t  ngx_http_image_filter_commands[] = {
       ngx_http_set_complex_value_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
       offsetof(ngx_http_image_filter_conf_t, wmpcv),
+      NULL },
+    { ngx_string("image_filter_watermark_text"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, ftxt),
+      NULL },
+    { ngx_string("image_filter_watermark_size"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, fsze),
+      NULL },
+    { ngx_string("image_filter_watermark_font"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, ffont),
+      NULL },
+    { ngx_string("image_filter_watermark_colorR"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, fcolorR),
+      NULL },
+    { ngx_string("image_filter_watermark_colorB"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, fcolorB),
+      NULL },
+    { ngx_string("image_filter_watermark_colorG"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, fcolorG),
+      NULL },
+    { ngx_string("image_filter_watermark_fontposition"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
+      ngx_http_set_complex_value_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_image_filter_conf_t, fpst),
       NULL },
     { ngx_string("image_filter_watermark_height_from"),
       NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
@@ -605,6 +666,62 @@ ngx_http_image_process(ngx_http_request_t *r)
 		ngx_cpystrn(conf->watermark.data, watermark_value.data, watermark_value.len+1);
 
 		conf->watermark.len = watermark_value.len;
+
+
+		
+
+
+
+
+		ngx_str_t  watermark_text_value;
+		watermark_text_value = ngx_http_image_filter_get_str_value(r, conf->ftxt, conf->watermark_text);
+		conf->watermark_text.data = ngx_pcalloc(r->pool, watermark_text_value.len + 1);
+		ngx_cpystrn(conf->watermark_text.data, watermark_text_value.data, watermark_text_value.len+1);
+
+
+
+
+		ngx_str_t  watermark_size_value;
+		watermark_size_value = ngx_http_image_filter_get_str_value(r, conf->fsze, conf->watermark_size);
+		conf->watermark_size.data = ngx_pcalloc(r->pool, watermark_size_value.len + 1);
+		ngx_cpystrn(conf->watermark_size.data, watermark_size_value.data, watermark_size_value.len+1);
+	
+	
+	
+		ngx_str_t  watermark_font_value;
+		watermark_font_value = ngx_http_image_filter_get_str_value(r, conf->ffont, conf->watermark_font);
+		conf->watermark_font.data = ngx_pcalloc(r->pool, watermark_font_value.len + 1);
+		ngx_cpystrn(conf->watermark_font.data, watermark_font_value.data, watermark_font_value.len+1);
+	
+	
+	
+	
+	
+		ngx_str_t  watermark_color_R_value;
+		watermark_color_R_value = ngx_http_image_filter_get_str_value(r, conf->fcolorR, conf->watermark_color_R);
+		conf->watermark_color_R.data = ngx_pcalloc(r->pool, watermark_color_R_value.len + 1);
+		ngx_cpystrn(conf->watermark_color_R.data, watermark_color_R_value.data, watermark_color_R_value.len+1);
+	
+		ngx_str_t  watermark_color_B_value;
+		watermark_color_B_value = ngx_http_image_filter_get_str_value(r, conf->fcolorB, conf->watermark_color_B);
+		conf->watermark_color_B.data = ngx_pcalloc(r->pool, watermark_color_B_value.len + 1);
+		ngx_cpystrn(conf->watermark_color_B.data, watermark_color_B_value.data, watermark_color_B_value.len+1);
+	
+		ngx_str_t  watermark_color_G_value;
+		watermark_color_G_value = ngx_http_image_filter_get_str_value(r, conf->fcolorG, conf->watermark_color_G);
+		conf->watermark_color_G.data = ngx_pcalloc(r->pool, watermark_color_G_value.len + 1);
+		ngx_cpystrn(conf->watermark_color_G.data, watermark_color_G_value.data, watermark_color_G_value.len+1);
+	
+
+
+		ngx_str_t  watermark_fontposition_value;
+		watermark_fontposition_value = ngx_http_image_filter_get_str_value(r, conf->fpst, conf->watermark_fontposition);
+		conf->watermark_fontposition.data = ngx_pcalloc(r->pool, watermark_fontposition_value.len + 1);
+		ngx_cpystrn(conf->watermark_fontposition.data, watermark_fontposition_value.data, watermark_fontposition_value.len+1);
+
+
+
+
 
 		ngx_str_t  watermark_position_value;
 		watermark_position_value = ngx_http_image_filter_get_str_value(r, conf->wmpcv, conf->watermark_position);
@@ -1122,7 +1239,29 @@ transparent:
 
             min_w=dx;
             min_h=dy;
-
+			
+					
+						
+						char *s = conf->watermark_text.data;
+						char *sz = conf->watermark_size.data;
+						char *f = conf->watermark_font.data; 
+						char *R = conf->watermark_color_R.data;
+						char *B = conf->watermark_color_B.data;
+						char *G = conf->watermark_color_G.data;
+						int brect[8];
+						int coloFont = gdImageColorAllocate(dst, atoi(R),atoi(B),atoi(G));
+						gdFTUseFontConfig(1);
+						
+						gdImageStringFT(NULL,&brect[0],0,f,atoi(sz),0.,0,0,s);
+						int xleng = (int)brect[2]-brect[6];
+						int yleng = (int)brect[3]-brect[5];
+						int TEx;
+						int TEy;
+									
+			
+			
+			
+						
             if (!min_w || min_w < 0) {
                 min_w=ctx->max_width;
             }
@@ -1138,24 +1277,24 @@ transparent:
 
                 if (watermark_file) {
                     gdImagePtr watermark, watermark_mix, white, white_mix;
-                    ngx_int_t wdx = 0, wdy = 0;
+					ngx_int_t wdx = 0, wdy = 0; 
 
                     watermark = gdImageCreateFromPng(watermark_file);
-
+					
                     if(watermark != NULL) {
                         if (ngx_strcmp(conf->watermark_position.data, "bottom-right") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
+                            wdx = (int)dst->sx - watermark->sx; /* Removed -10 problem for me */ 
                             wdy = (int)dst->sy - watermark->sy - 10;
                         } else if (ngx_strcmp(conf->watermark_position.data, "top-left") == 0) {
-                            wdx = wdy = 10;
+                            wdx = wdy;
                         } else if (ngx_strcmp(conf->watermark_position.data, "top-right") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
+                            wdx = (int)dst->sx - watermark->sx; /* Removed -10 problem for me */ 
                             wdy = 10;
                         } else if (ngx_strcmp(conf->watermark_position.data, "bottom-left") == 0) {
                             wdx = 10;
-                            wdy = (int)dst->sy - watermark->sy - 10;
+                            wdy = (int)dst->sy - watermark->sy; /* Removed -10 problem for me */ 
                         }else if (ngx_strcmp(conf->watermark_position.data, "top-center") == 0) {
-                            wdy = 10;
+                            wdy = 0;
                             wdx = (int)dst->sx/2 - (int)watermark->sx/2;
                         }else if (ngx_strcmp(conf->watermark_position.data, "bottom-center") == 0) {
                             wdx = (int)dst->sx/2 - (int)watermark->sx/2;
@@ -1164,7 +1303,7 @@ transparent:
                             wdx = 10;
                             wdy = (int)dst->sy/2 - (int)watermark->sy/2;
                         }else if (ngx_strcmp(conf->watermark_position.data, "right-center") == 0) {
-                            wdx = (int)dst->sx - watermark->sx - 10;
+                            wdx = (int)dst->sx - watermark->sx; /* Removed -10 problem for me */ 
                             wdy = (int)dst->sy/2 - (int)watermark->sy/2;
                         }else if (ngx_strcmp(conf->watermark_position.data, "center-center") == 0) {
                             wdx = (int)dst->sx/2 - (int)watermark->sx/2;
@@ -1179,6 +1318,24 @@ transparent:
                                 wdy = ((int)dst->sy/2 - (int)watermark->sy/2) - (int)((double)rand() / ((double)RAND_MAX + 1) * 15);
                             }
                         }
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
                         watermark_mix = gdImageCreateTrueColor(watermark->sx, watermark->sy);
                         // WorkAround on transparent source, fill background to white
                         if (ctx->type == NGX_HTTP_IMAGE_GIF || ctx->type == NGX_HTTP_IMAGE_PNG) {
@@ -1192,10 +1349,47 @@ transparent:
                         	gdImageDestroy(white_mix);
                         	dst=white;
 			}
+			
+			
+						
+			
+			
+	
                         gdImageCopy(watermark_mix, dst, 0, 0, wdx, wdy, watermark->sx, watermark->sy);
                         gdImageCopy(watermark_mix, watermark, 0, 0, 0, 0, watermark->sx, watermark->sy);
-                        gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 75);
+                        gdImageCopyMerge(dst, watermark_mix, wdx, wdy, 0, 0, watermark->sx, watermark->sy, 100);
                         gdImageDestroy(watermark_mix);
+
+									
+									
+						if (s) { 
+								if (ngx_strcmp(conf->watermark_fontposition.data, "bottom-right") == 0) {TEy = (int)dst->sy;TEx = (int)dst->sx - xleng;
+								} else if (ngx_strcmp(conf->watermark_fontposition.data, "top-left") == 0) {TEx = 0;TEy = yleng;
+								} else if (ngx_strcmp(conf->watermark_fontposition.data, "top-right") == 0) {TEx = (int)dst->sx - xleng;TEy = yleng;
+								} else if (ngx_strcmp(conf->watermark_fontposition.data, "bottom-left") == 0) {TEx = 0;TEy = (int)dst->sy;
+								}else if (ngx_strcmp(conf->watermark_fontposition.data, "top-center") == 0) {TEx = (int)dst->sx/2 - xleng/2;TEy = yleng;
+								}else if (ngx_strcmp(conf->watermark_fontposition.data, "bottom-center") == 0) {TEx = (int)dst->sx/2 - xleng/2;TEy = (int)dst->sy;
+								}else if (ngx_strcmp(conf->watermark_fontposition.data, "left-center") == 0) {TEx = 0;TEy = (int)dst->sy/2 + yleng/2;
+								}else if (ngx_strcmp(conf->watermark_fontposition.data, "right-center") == 0) {TEx = (int)dst->sx - xleng;TEy = (int)dst->sy/2 + yleng/2;
+								}else if (ngx_strcmp(conf->watermark_fontposition.data, "center-center") == 0) {TEx = (int)dst->sx/2 - xleng/2;TEy = (int)dst->sy/2 + yleng/2;
+								}
+								else
+								{TEx = (int)dst->sx/2 - xleng/2;TEy = (int)dst->sy/2 + yleng/2;
+								}
+								
+								if (!f[0]) { f = "times:bold:italic"; } /* User supplied font else default "times:bold:italic" */ 
+								if (!sz[0]) { sz[0] = 16.4; } /* User supplied size else default "40" */ 
+								
+								gdImageStringFT(dst,&brect[0],coloFont,f,atoi(sz),0.0,TEx,TEy,s);
+						}
+						
+						
+						
+			
+
+
+						
+						
 
                     } else {
                         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "watermark file '%s' is not PNG", conf->watermark.data);

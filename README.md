@@ -15,6 +15,17 @@ image_filter_watermark_height_from 400;
     
 image_filter_watermark "PATH_TO_FILE";
 image_filter_watermark_position center-center; # top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
+
+
+image_filter_watermark_text "Text"; #Text label
+image_filter_watermark_font "/tmp/font.TTF:italic:bold"; #Optional fontfile or font "times:bold:italic"
+image_filter_watermark_size 8.5; #Font Size
+image_filter_watermark_colorR "0"; #Font Color R
+image_filter_watermark_colorB "0"; #Font Color B
+image_filter_watermark_colorG "0"; #Font Color G
+image_filter_watermark_fontposition top-left; #Font location top-left|top-right|bottom-right|bottom-left|right-center|left-center|bottom-center|top-center|center-center|center-random`
+
+
 ```
 
 `image_filter_watermark_width_from` - Minimal width image (after resize and crop) of when to use watermark.
